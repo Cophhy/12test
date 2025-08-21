@@ -1,13 +1,12 @@
-// @use 'custom';
+@use 'custom'; // carrega variáveis + Bootstrap (vem do _custom.scss)
 
-// IMPORT THE COMPONENTS 
+// COMPONENTS
 @use 'components/animations';
 @use 'components/buttons';
 @use 'components/mixins';
 @use 'components/typography';
 
-
-// IMPORT THE SECTIONS 
+// SECTIONS
 @use 'sections/navbar';
 @use 'sections/intro-section';
 @use 'sections/campanies';

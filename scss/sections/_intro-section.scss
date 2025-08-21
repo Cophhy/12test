@@ -2,50 +2,170 @@
 @use '../components/mixins' as *;
 
 .intro-section {
-    @include gradient;
-    padding: 10rem 0 0 0;
-    width: 100%;
-    height: 100%;
+  @include gradient; // seu mixin de fundo
+  padding: 10rem 0 0;
+  width: 100%;
+  height: 100%;
+
+  .social-links a {
+    color: #fff;
+    transition: color .2s ease, transform .2s ease;
+  }
+
+  /* usa o blue-300 no hover */
+  .social-links a:hover,
+  .social-links a:focus {
+    color: $iconhover !important;   // sobrescreve .text-white!important
+    transform: translateY(-1px);
+  }
+
+  /* opcional: caso o <i> tenha cor própria */
+  .social-links a:hover i,
+  .social-links a:focus i {
+    color: $iconhover !important;
+  }
 }
 
+/* Restante do seu bloco */
 .intros {
+    /* caixa da imagem */
+    .image-box {
+    position: relative;
+    display: inline-block;               /* evita ocupar 100% da largura */
+    }
 
+    .image-box .avatar {
+    display: block;                      /* remove gap de baseline */
+    width: clamp(180px, 42vw, 420px);    /* responsivo */
+    aspect-ratio: 1 / 1;                 /* mantém quadrado */
+    object-fit: cover;                   /* corta sem distorcer */
+    border-radius: 9999px;               /* círculo */
+    border: 6px solid rgba(255,255,255,.55);
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+    }
 
-    .video-box {
-        position: relative;
-
-
-        a {
-            // @include absoluteCenter;
-
-            span {
-
-
-                i {
-
-                    font-size: 6rem;
-                    color: $secondary;
-
-                }
-            }
-        }
+    /* opcional: aro sutil com a cor da marca */
+    .image-box::after {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border-radius: 9999px;
+    background: conic-gradient(from 180deg, var(--bs-primary), transparent 60%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    padding: 10px;
+    pointer-events: none;
+    opacity: .35;
     }
 }
 
 .border-animation {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 6rem;
-    height: 6rem;
-    border: 0.55rem solid $white;
-    border-radius: 50%;
-    animation: pulse-border 1.5s linear infinite;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6rem;
+  height: 6rem;
+  border: 0.55rem solid $white;
+  border-radius: 50%;
+  animation: pulse-border 1.5s linear infinite;
 
-    &--border-1 {
-        animation-delay: 1s;
-    }
-    &--border-2 {
-        animation-delay: 1.5s;
-    }
+  &--border-1 { animation-delay: 1s; }
+  &--border-2 { animation-delay: 1.5s; }
+}
+
+/* Caixa base da imagem */
+.IMAGE-box {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;         /* evita barras durante animação */
+  border-radius: 1rem;      /* opcional */
+  box-shadow: 0 12px 30px rgba(0,0,0,.18);
+}
+
+/* A imagem em si */
+.IMAGE-box img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform-origin: 50% 50%;
+  will-change: transform, filter;
+  backface-visibility: hidden;
+}
+
+/* =========================
+   1) Giro lento contínuo
+   ========================= */
+.IMAGE-box.spin-slow img {
+  animation: spin-slow 28s linear infinite;
+}
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+/* Dica: se a imagem for retangular, o giro pode ficar estranho.
+   Use .is-circle pra avatar redondo: */
+.IMAGE-box.is-circle { border-radius: 9999px; }
+
+/* =========================
+   2) Ken Burns (zoom + pan)
+   ========================= */
+.IMAGE-box.kenburns img {
+  animation: kenburns 18s ease-in-out infinite;
+  /* opcional: um leve filtro pra dar “vida” */
+  filter: saturate(1.04) contrast(1.02);
+}
+
+@keyframes kenburns {
+  0%   { transform: scale(1)    translate(0%, 0%);   }
+  25%  { transform: scale(1.06) translate(-2%, -1%); }
+  50%  { transform: scale(1.12) translate( 2%, -2%); }
+  75%  { transform: scale(1.06) translate(-1%,  2%); }
+  100% { transform: scale(1)    translate(0%, 0%);   }
+}
+
+/* =========================
+   3) Tilt 3D + flutuar sutil
+   ========================= */
+.IMAGE-box.tilt-float {
+  perspective: 1000px;
+}
+.IMAGE-box.tilt-float img {
+  animation:
+    floaty 6s ease-in-out infinite,
+    tilt   8s ease-in-out infinite;
+}
+
+@keyframes floaty {
+  0%,100% { transform: translateY(0)     }
+  50%     { transform: translateY(-6px)  }
+}
+@keyframes tilt {
+  0%,100% { transform: rotateX(0deg) rotateY(0deg) }
+  25%     { transform: rotateX(3deg) rotateY(-3deg)}
+  50%     { transform: rotateX(0deg) rotateY(0deg) }
+  75%     { transform: rotateX(-3deg) rotateY(3deg)}
+}
+
+/* =========================
+   “Shine” contínuo (opcional)
+   ========================= */
+.IMAGE-box.shine::after {
+  content: "";
+  position: absolute;
+  inset: -120% -50%;
+  background: linear-gradient(120deg,
+    rgba(255,255,255,0) 30%,
+    rgba(255,255,255,.35) 50%,
+    rgba(255,255,255,0) 70%);
+  transform: translateX(-100%) rotate(15deg);
+  animation: sweep 4.5s linear infinite;
+  pointer-events: none;
+}
+@keyframes sweep { to { transform: translateX(100%) rotate(15deg); } }
+
+/* Respeitar usuários com redução de movimento */
+@media (prefers-reduced-motion: reduce) {
+  .IMAGE-box img,
+  .IMAGE-box::after { animation: none !important; }
 }
